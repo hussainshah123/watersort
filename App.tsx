@@ -1,45 +1,36 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
+ * Water Sort Master — entry point + minimal screen router.
+ * No navigation library needed: a single piece of state swaps screens.
  */
+import React, { useState } from 'react';
+import { StatusBar } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Home from './src/screens/home/Home';
+import Game from './src/screens/game/Game';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
-
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+function App(): React.JSX.Element {
+  const [screen, setScreen] = useState<'home' | 'game'>('home');
+  const [level, setLevel] = useState(1);
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <StatusBar barStyle="light-content" backgroundColor="#141A33" />
+      {screen === 'home' ? (
+        <Home
+          level={level}
+          onPlay={() => setScreen('game')}
+          onReset={() => setLevel(1)}
+        />
+      ) : (
+        <Game
+          key={level}
+          level={level}
+          onExit={() => setScreen('home')}
+          onNext={() => setLevel(l => l + 1)}
+        />
+      )}
     </SafeAreaProvider>
   );
 }
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;
