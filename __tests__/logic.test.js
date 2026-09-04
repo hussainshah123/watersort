@@ -1,5 +1,5 @@
 import { canPour, isSolved, pour, solve, topInfo } from '../src/game/logic';
-import { generateLevel } from '../src/game/levels';
+import { generateLevel, starsFor } from '../src/game/levels';
 
 test('topInfo returns the top contiguous run', () => {
   expect(topInfo([0, 1, 1, 1])).toEqual({ color: 1, count: 3 });
@@ -40,8 +40,23 @@ test('solver solves a simple scramble', () => {
 
 test('generated levels are always solvable', () => {
   for (const level of [1, 3, 6, 10, 15]) {
-    const board = generateLevel(level);
-    expect(isSolved(board)).toBe(false);
-    expect(solve(board)).not.toBeNull();
+    const { bottles, par } = generateLevel(level);
+    expect(isSolved(bottles)).toBe(false);
+    expect(solve(bottles)).not.toBeNull();
+    expect(par).toBeGreaterThan(0);
   }
+});
+
+test('level generation is deterministic', () => {
+  for (const level of [1, 4, 9]) {
+    expect(generateLevel(level).bottles).toEqual(generateLevel(level).bottles);
+  }
+});
+
+test('stars drop as the player drifts from par', () => {
+  expect(starsFor(10, 10)).toBe(3);
+  expect(starsFor(12, 10)).toBe(3);
+  expect(starsFor(13, 10)).toBe(2);
+  expect(starsFor(16, 10)).toBe(2);
+  expect(starsFor(17, 10)).toBe(1);
 });

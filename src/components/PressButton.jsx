@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '../theme/theme';
+import { useTheme } from '../state/AppState';
 
 // A button that springs on press. `variant` switches between the big primary
 // CTA and the smaller round tool buttons used in the game HUD.
@@ -14,6 +15,7 @@ export default function PressButton({
   style,
 }) {
   const scale = useRef(new Animated.Value(1)).current;
+  const theme = useTheme();
 
   const to = v =>
     Animated.spring(scale, {
@@ -35,18 +37,33 @@ export default function PressButton({
       <Animated.View
         style={[
           round ? styles.tool : styles.primary,
+          !round && { backgroundColor: theme.accent, shadowColor: theme.accent },
           disabled && styles.disabled,
           { transform: [{ scale }] },
         ]}
       >
-        {icon ? <Text style={round ? styles.toolIcon : styles.icon}>{icon}</Text> : null}
+        {icon ? (
+          <Text
+            style={[
+              round ? styles.toolIcon : styles.icon,
+              !round && { color: theme.onAccent },
+            ]}
+          >
+            {icon}
+          </Text>
+        ) : null}
         {label ? (
-          <Text style={round ? styles.toolLabel : styles.primaryLabel}>
+          <Text
+            style={[
+              round ? styles.toolLabel : styles.primaryLabel,
+              !round && { color: theme.onAccent },
+            ]}
+          >
             {label}
           </Text>
         ) : null}
         {badge != null && (
-          <View style={styles.badge}>
+          <View style={[styles.badge, { backgroundColor: theme.accent2 }]}>
             <Text style={styles.badgeText}>{badge}</Text>
           </View>
         )}

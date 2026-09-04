@@ -1,4 +1,4 @@
-package com.watersort
+package com.fortdice.watersort
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

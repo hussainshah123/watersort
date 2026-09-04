@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, Dimensions, Easing, StyleSheet, View } from 'react-native';
-import { LIQUIDS } from '../theme/theme';
+import { useTheme } from '../state/AppState';
 
 const { width: SCREEN_W } = Dimensions.get('window');
 
 // Lightweight confetti: N little rectangles that fall + drift + spin. Pure
 // Animated, native-driven, so it stays smooth even during the win overlay.
-function Piece({ delay }) {
+function Piece({ delay, liquids }) {
   const fall = useRef(new Animated.Value(0)).current;
   const cfg = useMemo(() => {
-    const c = LIQUIDS[Math.floor(Math.random() * LIQUIDS.length)];
+    const c = liquids[Math.floor(Math.random() * liquids.length)];
     return {
       color: c.main,
       left: Math.random() * SCREEN_W,
@@ -18,6 +18,7 @@ function Piece({ delay }) {
       duration: 2200 + Math.random() * 1600,
       spin: Math.random() > 0.5 ? 1 : -1,
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -68,6 +69,7 @@ function Piece({ delay }) {
 }
 
 export default function Confetti({ count = 60 }) {
+  const theme = useTheme();
   const pieces = useMemo(
     () => Array.from({ length: count }, (_, i) => i),
     [count],
@@ -75,7 +77,7 @@ export default function Confetti({ count = 60 }) {
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       {pieces.map(i => (
-        <Piece key={i} delay={(i % 12) * 120} />
+        <Piece key={i} delay={(i % 12) * 120} liquids={theme.liquids} />
       ))}
     </View>
   );

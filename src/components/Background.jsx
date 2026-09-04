@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
-import { COLORS } from '../theme/theme';
+import { useTheme } from '../state/AppState';
 
 // No LinearGradient native dependency: we stack a base colour with two large,
 // blurred-looking translucent orbs that drift slowly for a living backdrop.
@@ -47,17 +47,21 @@ function Orb({ color, size, style, range }) {
 }
 
 export default function Background({ children }) {
+  const theme = useTheme();
   return (
-    <View style={styles.root}>
-      <View style={styles.bottomTint} />
+    <View style={[styles.root, { backgroundColor: theme.bgTop }]}>
+      <View style={[styles.bottomTint, { backgroundColor: theme.bgBottom }]} />
       <Orb
-        color={COLORS.glowA}
+        // Remounting on a theme switch restarts the drift cleanly.
+        key={`a-${theme.id}`}
+        color={theme.glowA}
         size={320}
         style={{ top: -60, left: -80 }}
         range={[0, 40]}
       />
       <Orb
-        color={COLORS.glowB}
+        key={`b-${theme.id}`}
+        color={theme.glowB}
         size={280}
         style={{ bottom: -40, right: -70 }}
         range={[0, -40]}
@@ -68,10 +72,9 @@ export default function Background({ children }) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: COLORS.bgTop, overflow: 'hidden' },
+  root: { flex: 1, overflow: 'hidden' },
   bottomTint: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: COLORS.bgBottom,
     opacity: 0.6,
     top: '45%',
   },

@@ -1,4 +1,12 @@
 {
   "name": "watersort",
-  "displayName": "watersort"
+  "displayName": "watersort",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-4687548663016677~5898805846",
+    "ios_app_id": "ca-app-pub-3940256099942544~1458002511",
+    "user_tracking_usage_description": "This identifier will be used to deliver personalised ads to you.",
+    "delay_app_measurement_init": true,
+    "optimize_initialization": true,
+    "optimize_ad_loading": true
+  }
 }

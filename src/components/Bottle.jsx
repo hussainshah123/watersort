@@ -3,20 +3,20 @@ import { Animated, StyleSheet, View } from 'react-native';
 import {
   COLORS,
   HEADSPACE,
-  LIQUIDS,
   RADIUS_BOTTOM,
   RADIUS_TOP,
   SEG_H,
   TUBE_H,
   TUBE_W,
 } from '../theme/theme';
+import { useTheme } from '../state/AppState';
 
 // A single liquid unit. Its layout height is ALWAYS fixed (SEG_H) — during a
 // pour we animate scaleY (a transform, not a layout prop) so the New
 // Architecture's Fabric renderer never has to animate Yoga layout, which is
 // what was crashing (SurfaceMountingManager.overridePropsReadableMap).
-function Segment({ colorId, isBottom, isTop, scaleAnim, origin }) {
-  const c = LIQUIDS[colorId];
+function Segment({ liquids, colorId, isBottom, isTop, scaleAnim, origin }) {
+  const c = liquids[colorId % liquids.length];
   const animStyle = scaleAnim
     ? {
         transform: [{ scaleY: scaleAnim }],
@@ -60,6 +60,8 @@ function Bottle({
   fillAnim,
   hint,
 }) {
+  const theme = useTheme();
+  const liquids = theme.liquids;
   const staticCount = colors.length - drainCount;
   const staticSegs = colors.slice(0, staticCount);
   const drainSegs = colors.slice(staticCount);
@@ -76,7 +78,10 @@ function Bottle({
         <View
           style={[
             styles.tube,
-            selected && styles.tubeSelected,
+            selected && [
+              styles.tubeSelected,
+              { borderColor: theme.accent, shadowColor: theme.accent },
+            ],
             hint && styles.tubeHint,
           ]}
         >
@@ -85,6 +90,7 @@ function Bottle({
             {fillIds.map((id, i) => (
               <Segment
                 key={`f${i}`}
+                liquids={liquids}
                 colorId={id}
                 scaleAnim={fillAnim}
                 origin="bottom"
@@ -98,6 +104,7 @@ function Bottle({
               .map((id, i) => (
                 <Segment
                   key={`d${i}`}
+                  liquids={liquids}
                   colorId={id}
                   scaleAnim={drainAnim}
                   origin="top"
@@ -112,6 +119,7 @@ function Bottle({
                 return (
                   <Segment
                     key={`s${realIndex}`}
+                    liquids={liquids}
                     colorId={id}
                     isBottom={realIndex === 0}
                     isTop={
@@ -125,7 +133,12 @@ function Bottle({
           <View style={styles.glassHi} />
           <View style={styles.mouthShade} />
         </View>
-        <View style={[styles.rim, selected && styles.rimSelected]} />
+        <View
+          style={[
+            styles.rim,
+            selected && { borderColor: theme.accent },
+          ]}
+        />
       </Animated.View>
     </Animated.View>
   );
@@ -151,8 +164,6 @@ const styles = StyleSheet.create({
     paddingTop: HEADSPACE,
   },
   tubeSelected: {
-    borderColor: COLORS.accent,
-    shadowColor: COLORS.accent,
     shadowOpacity: 0.9,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 0 },
@@ -217,9 +228,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.glassBorder,
     backgroundColor: 'rgba(255,255,255,0.10)',
-  },
-  rimSelected: {
-    borderColor: COLORS.accent,
   },
 });
 

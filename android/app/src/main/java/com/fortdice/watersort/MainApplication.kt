@@ -1,4 +1,4 @@
-package com.watersort
+package com.fortdice.watersort
 
 import android.app.Application
 import com.facebook.react.PackageList
