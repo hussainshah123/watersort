@@ -18,6 +18,9 @@ export default function AdBanner({ style }) {
     if (Platform.OS === 'ios') ref.current?.load();
   });
 
+  // No unit configured for this platform -> render nothing at all.
+  if (!AD_UNITS.banner) return null;
+
   return (
     <View style={[styles.wrap, loaded && styles.wrapLoaded, style]}>
       <BannerAd

@@ -37,6 +37,8 @@ async function requestConsent() {
 }
 
 function preloadInterstitial() {
+  // No unit configured for this platform -> the format stays off.
+  if (!AD_UNITS.interstitial) return;
   try {
     interstitial = InterstitialAd.createForAdRequest(AD_UNITS.interstitial, {
       requestNonPersonalizedAdsOnly: false,

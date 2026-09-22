@@ -20,7 +20,7 @@ const REAL = {
   },
   ios: {
     // TODO: iOS needs its own AdMob app (and its own units) — an Android unit
-    // ID will never fill on iOS. Until then iOS serves test ads.
+    // ID will never fill on iOS, so ads stay off in iOS release builds.
     banner: 'ca-app-pub-0000000000000000/0000000000',
     interstitial: 'ca-app-pub-0000000000000000/0000000000',
   },
@@ -28,14 +28,16 @@ const REAL = {
 
 const platform = Platform.OS === 'ios' ? REAL.ios : REAL.android;
 
-// A placeholder that was never filled in falls back to a test ID rather than
-// firing a request that can only ever return "no fill".
 const isPlaceholder = id => !id || id.includes('0000000000000000');
 
+// In development every format serves Google's test ads. In a release build a
+// format with no real unit ID is DISABLED (null) rather than falling back to a
+// test ID — shipping "Test Ad" placeholders to real users earns nothing and
+// looks broken. Fill the ID in and the format switches itself back on.
 function unit(kind, testId) {
   if (__DEV__) return testId;
   const id = platform[kind];
-  return isPlaceholder(id) ? testId : id;
+  return isPlaceholder(id) ? null : id;
 }
 
 export const AD_UNITS = {
